@@ -16,6 +16,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
+# Colab exports matplotlib's notebook backend, which is not available inside
+# the isolated Python 3.10 environment used by this bot.
+os.environ.setdefault("MPLBACKEND", "Agg")
+
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.constants import ChatAction
 from telegram.ext import (
