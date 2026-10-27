@@ -90,8 +90,11 @@ the cells in order, enter the BotFather token when prompted, and keep the
 runtime connected. The bot includes inline buttons for settings, status,
 reset, cancellation, all-faces mode, audio handling, and FPS mode. During
 processing it edits a live message with the processed frame count and
-percentage. Colab sessions stop when disconnected, so this is intended for
-temporary use rather than permanent hosting.
+percentage. The notebook creates a Python 3.10 virtual environment so the
+older NumPy, PyTorch, TensorFlow, and ONNX Runtime wheels used by this
+project do not fail to build on newer Colab runtimes. Colab sessions stop when
+disconnected, so this is intended for temporary use rather than permanent
+hosting.
 
 <a target="_blank" href="https://colab.research.google.com/github/ben-afrinco/roop-unleashed-telegram-bot/blob/master/telegram_bot_colab.ipynb">
   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
