@@ -273,7 +273,7 @@ def params_gen_func(proc, frame):
     global clip_text
 
     return {"original_frame": frame, "blend_ratio": roop.globals.blend_ratio,
-             "swap_mode": roop.globals.face_swap_mode, "face_distance_threshold": roop.globals.distance_threshold, 
+             "swap_mode": roop.globals.face_swap_mode or "first", "face_distance_threshold": roop.globals.distance_threshold,
              "input_face_datas": roop.globals.INPUT_FACES, "target_face_datas": roop.globals.TARGET_FACES,
              "clip_prompt": clip_text}
 

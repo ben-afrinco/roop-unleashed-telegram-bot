@@ -146,6 +146,9 @@ class TelegramRoopBot:
         roop.globals.keep_frames = False
         roop.globals.skip_audio = job.skip_audio
         roop.globals.many_faces = job.many_faces
+        # The chain processor needs an explicit mode. Leaving this global as
+        # None makes it process frames without entering any swap branch.
+        roop.globals.face_swap_mode = "all" if job.many_faces else "first"
         roop.globals.source_face_index = 0
         roop.globals.target_face_index = 0
         roop.globals.video_encoder = "libx264"
