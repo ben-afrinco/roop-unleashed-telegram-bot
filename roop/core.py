@@ -189,6 +189,8 @@ def update_status(message: str) -> None:
     global call_display_ui
 
     print(message)
+    if roop.globals.progress_callback is not None:
+        roop.globals.progress_callback(status=message)
     if call_display_ui is not None:
         call_display_ui(message)
 

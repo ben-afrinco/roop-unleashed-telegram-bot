@@ -50,6 +50,8 @@ class ChainBatchImageProcessor(ChainImgProcessor):
         })
         progress.refresh()
         progress.update(1)
+        if roop.globals.progress_callback is not None:
+            roop.globals.progress_callback(progress.n, progress.total, 'معالجة الإطارات')
 
 
     def process_frames(self, source_files: List[str], target_files: List[str], current_files, update: Callable[[], None]) -> None:
@@ -87,4 +89,3 @@ class ChainBatchImageProcessor(ChainImgProcessor):
                     futures.append(future)
                 for future in as_completed(futures):
                     future.result()
-

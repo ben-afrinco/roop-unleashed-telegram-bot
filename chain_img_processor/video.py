@@ -50,6 +50,8 @@ class ChainVideoImageProcessor(ChainImgProcessor):
             'execution_threads': self.num_threads
         })
         progress.update(1)
+        if roop.globals.progress_callback is not None:
+            roop.globals.progress_callback(progress.n, progress.total, 'معالجة الفيديو')
 
 
     def read_frames_thread(self, cap, num_threads):

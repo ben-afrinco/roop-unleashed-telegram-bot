@@ -63,6 +63,36 @@ For Video face-swapping you also need to have ffmpeg properly installed (having 
 - Windows: run the `windows_run.bat` from the Installer.
 - Linux: `python run.py`
 
+#### Telegram bot
+
+The repository includes a Telegram interface in `telegram_bot.py`. It accepts
+an image as the source face, then an image or video as the target, and returns
+the processed file in Telegram. Jobs are serialized because the original
+pipeline uses process-wide model state; each user still has an independent
+session.
+
+```bash
+pip install -r requirements.txt
+export TELEGRAM_BOT_TOKEN="123456:replace-with-your-token"
+python telegram_bot.py
+```
+
+For a CUDA-capable ONNX Runtime installation, use
+`ROOP_EXECUTION_PROVIDER=cuda` instead of the default CPU provider. The bot
+supports `/start`, `/help`, `/settings`, `/status`, `/reset`, `/cancel`,
+`/many_faces on|off`, `/skip_audio on|off`, and `/keep_fps on|off`. Send the
+source as a photo or image file, followed by the target as a photo, video, or
+supported document. `TELEGRAM_MAX_FILE_MB` can be used to lower the default
+500 MB download limit.
+
+For Google Colab, open `telegram_bot_colab.ipynb`, select a GPU runtime, run
+the cells in order, enter the BotFather token when prompted, and keep the
+runtime connected. The bot includes inline buttons for settings, status,
+reset, cancellation, all-faces mode, audio handling, and FPS mode. During
+processing it edits a live message with the processed frame count and
+percentage. Colab sessions stop when disconnected, so this is intended for
+temporary use rather than permanent hosting.
+
 <a target="_blank" href="https://colab.research.google.com/github/C0untFloyd/roop-unleashed/blob/main/roop-unleashed.ipynb">
   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 </a>
@@ -111,4 +141,3 @@ https://github.com/csxmli2016/DMDNet
 
 
 Thanks to all developers!
-

@@ -29,6 +29,7 @@ distance_threshold = 0.65
 default_det_size = True
 
 processing = False 
+progress_callback = None
 
 FACE_ENHANCER = None
 
@@ -40,5 +41,4 @@ VIDEO_CHAIN_PROCESSOR = None
 BATCH_IMAGE_CHAIN_PROCESSOR = None
 
 CFG: Settings = None
-
 
