@@ -22,6 +22,7 @@ os.environ.setdefault("MPLBACKEND", "Agg")
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.constants import ChatAction
+from telegram.error import BadRequest
 from telegram.ext import (
     Application,
     ApplicationBuilder,
@@ -158,12 +159,15 @@ class TelegramRoopBot:
         roop.globals.progress_callback = job.report
         try:
             job.report(status="فحص الوجوه")
-            source_faces = core.extract_face_images(str(job.source_path), (False, 0))
+            source_faces = core.extract_face_images(
+                str(job.source_path), (util.is_video(str(job.source_path)), 0)
+            )
             if not source_faces:
                 raise ValueError("لم يتم العثور على وجه في صورة المصدر")
             roop.globals.INPUT_FACES.append(source_faces[0])
             target_faces = core.extract_face_images(
-                str(job.target_path), (False, util.has_image_extension(str(job.target_path)))
+                str(job.target_path),
+                (util.is_video(str(job.target_path)), 0),
             )
             if not target_faces:
                 raise ValueError("لم يتم العثور على وجه في الهدف")
@@ -233,6 +237,14 @@ def progress_text(job: Job) -> str:
         bar = "█" * filled + "░" * (10 - filled)
         return f"{job.status}\n[{bar}] {percent}% ({done}/{job.total} إطار)"
     return f"{job.status}\nجاري التحضير..."
+
+
+async def safe_edit(query, text: str, markup: InlineKeyboardMarkup) -> None:
+    try:
+        await query.edit_message_text(text, reply_markup=markup)
+    except BadRequest as exc:
+        if "Message is not modified" not in str(exc):
+            raise
 
 
 def extension_for(filename: str, fallback: str) -> str:
@@ -324,23 +336,23 @@ async def on_button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if action.startswith("toggle:"):
         field = action.split(":", 1)[1]
         setattr(session, field, not getattr(session, field))
-        await query.edit_message_text(settings_text(session), reply_markup=main_keyboard(session, session.busy))
+        await safe_edit(query, settings_text(session), main_keyboard(session, session.busy))
     elif action == "settings":
-        await query.edit_message_text(settings_text(session), reply_markup=main_keyboard(session, session.busy))
+        await safe_edit(query, settings_text(session), main_keyboard(session, session.busy))
     elif action == "status":
         text = f"الحالة: {'قيد المعالجة' if session.busy else 'جاهز'}\nالمهام في الطابور: {service.jobs.qsize()}"
         if session.current_job:
             text += "\n\n" + progress_text(session.current_job)
-        await query.edit_message_text(text, reply_markup=main_keyboard(session, session.busy))
+        await safe_edit(query, text, main_keyboard(session, session.busy))
     elif action == "reset":
         if session.busy:
-            await query.edit_message_text("لا يمكن إعادة الضبط أثناء المعالجة؛ استخدم زر الإلغاء أولًا.", reply_markup=main_keyboard(session, True))
+            await safe_edit(query, "لا يمكن إعادة الضبط أثناء المعالجة؛ استخدم زر الإلغاء أولًا.", main_keyboard(session, True))
         else:
             if session.work_dir:
                 shutil.rmtree(session.work_dir, ignore_errors=True)
             session.source_path = session.target_path = session.work_dir = None
             session.cancel_requested = False
-            await query.edit_message_text("تمت إعادة ضبط الجلسة. أرسل صورة المصدر.", reply_markup=main_keyboard(session))
+            await safe_edit(query, "تمت إعادة ضبط الجلسة. أرسل صورة المصدر.", main_keyboard(session))
     elif action == "cancel":
         await cmd_cancel(update, context)
 
@@ -364,9 +376,9 @@ async def receive_media(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         await message.chat.send_action(ChatAction.TYPING)
         if session.source_path is None:
             source = await download_media(update, session, media, filename, fallback)
-            if not util.is_image(str(source)):
+            if not util.is_image(str(source)) and not util.is_video(str(source)):
                 source.unlink(missing_ok=True)
-                raise ValueError("المصدر يجب أن يكون صورة")
+                raise ValueError("المصدر يجب أن يكون صورة أو فيديو يحتوي على وجه")
             session.source_path = source
             await message.reply_text("تم حفظ المصدر. أرسل الآن الهدف.", reply_markup=main_keyboard(session))
             return
