@@ -43,7 +43,7 @@ in a handy conda environment. This not only installs the application but also ru
 
 For other OS or if you know what you're doing:
 
-- `git clone https://github.com/C0untFloyd/roop-unleashed`
+- `git clone https://github.com/ben-afrinco/roop-unleashed-telegram-bot`
 - preferably create a venv or conda environment
 - `cd roop-unleashed`
 - `pip install -r requirements.txt`
@@ -93,7 +93,7 @@ processing it edits a live message with the processed frame count and
 percentage. Colab sessions stop when disconnected, so this is intended for
 temporary use rather than permanent hosting.
 
-<a target="_blank" href="https://colab.research.google.com/github/C0untFloyd/roop-unleashed/blob/main/roop-unleashed.ipynb">
+<a target="_blank" href="https://colab.research.google.com/github/ben-afrinco/roop-unleashed-telegram-bot/blob/master/telegram_bot_colab.ipynb">
   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 </a>
   
